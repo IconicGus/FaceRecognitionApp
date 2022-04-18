@@ -141,6 +141,7 @@ while True:
         m = np.matrix(matriz)
         print(m)
 
+        #código que cria um arquivo CSV da presença
         with open("saida_csv/presenca.csv", "w", newline='') as saida:
             escrever = csv.writer(saida)
             escrever.writerow(name_list)
