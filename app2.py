@@ -6,6 +6,8 @@ from torchvision import datasets
 from torch.utils.data import DataLoader
 from PIL import Image
 import cv2
+import numpy as np
+import csv
 import time
 import os
 
@@ -18,7 +20,7 @@ resnet = InceptionResnetV1(pretrained='vggface2').eval()
 # Using webcam recognize face
 
 # loading data.pt file
-load_data = torch.load('data1.pt') 
+load_data = torch.load('data2.pt') 
 embedding_list = load_data[0] 
 name_list = load_data[1] 
 
@@ -33,7 +35,7 @@ lista_pessoas_prentes = [] #1 se a pessoa estiver presente e 0 se ela não estiv
 i = 0
 while(i < tamanho_lista_name):
     qntd_reconhecimentos_individual.append(0)
-    lista_pessoas_prentes.append(0)
+    lista_pessoas_prentes.append("faltou")
     i+=1
 
 
@@ -102,7 +104,7 @@ while True:
                     frame = cv2.putText(original_frame, name_reconhecido+' esta presente! '+str(min_dist), (int(box[0]),int(box[1])), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255),2, cv2.LINE_AA)
                     frame = cv2.rectangle(frame, (int(box[0]),int(box[1])) , (int(box[2]),int(box[3])), (0,0,255), 2)
 
-                    lista_pessoas_prentes[name_list_idx] = 1
+                    lista_pessoas_prentes[name_list_idx] = "presente"
 
 
     cv2.imshow("IMG", frame)
@@ -131,10 +133,18 @@ while True:
 
             i+=1
 
-        print(str(name_list[index_mais_reconhecido]) + " foi o mais reconhecido") #printa o nome da pessoa mais reconhecida.
+        #print(str(name_list[index_mais_reconhecido]) + " foi o mais reconhecido") #printa o nome da pessoa mais reconhecida.
+        #print(lista_pessoas_prentes)
 
-        print(lista_pessoas_prentes)
+        #Código para transformar as listas name_list e lista_pessoas_prentes em uma matriz
+        matriz = np.array([[name_list], [lista_pessoas_prentes]])
+        m = np.matrix(matriz)
+        print(m)
 
+        with open("saida_csv/presenca.csv", "w", newline='') as saida:
+            escrever = csv.writer(saida)
+            escrever.writerow(name_list)
+            escrever.writerow(lista_pessoas_prentes)
 
         break
         
